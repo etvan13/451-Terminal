@@ -52,8 +52,8 @@ The **Brute Force Terminal** is a terminal program designed to execute commands 
         ```bash
           def new_command_handler(self):
              new_command = NewCommand()
-             output = new_command.run()
-             return output
+             new_command.run()
+             return "Exiting back to main terminal."
         ```
 4. Test Your Command
 

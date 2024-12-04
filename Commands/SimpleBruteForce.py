@@ -5,6 +5,7 @@ class SimpleBruteForce:
     def __init__(self, newpage):
         # Common passwords to test
         self.common_passwords = ["123456", "123456789", "qwerty", "abc123", "password"]
+        self.common_passwords2 = ["howdy", "nopasswordshere", "testpassword?", "pwd"]
         self.newpage = newpage
 
     def run(self):
@@ -12,7 +13,21 @@ class SimpleBruteForce:
         print("Welcome to the simple bruteforce command. This takes an executable path \nas input and tests simple passwords on its input.")
         executable = input("Enter the path to the executable (e.g., ./executables/password_checker): ").strip()
 
-        for password in self.common_passwords:
+        # Ask the user to pick a password list
+        while True:
+            password_choice = input("Pick list of passwords to try (1 or 2): ").strip()
+            if password_choice == "1":
+                password_list = self.common_passwords
+                break
+            elif password_choice == "2":
+                password_list = self.common_passwords2
+                break
+            else:
+                print("Invalid choice. Please enter 1 or 2.")
+
+        print()
+        
+        for password in password_list:
             try:
                 print(f"Trying password: {password}")
                 process = subprocess.Popen(
@@ -25,7 +40,10 @@ class SimpleBruteForce:
                 output, error = process.communicate(input=f"{password}\n".encode(), timeout=5)
 
                 if b"true" in output:
-                    return "Success! The password is: " + password
+                    print()
+                    print("Success! The password is '" + password + "' for " + executable)
+                    input("Press 'enter' to return to the main terminal.")
+                    return
                 elif b"Incorrect password" in output:
                     print("Incorrect password, trying the next one...")
                 else:
@@ -39,5 +57,7 @@ class SimpleBruteForce:
             # Add a delay between password attempts
             time.sleep(1)
 
+        print()
         print("All passwords tested. No success.")
-        return "No valid password found, exiting back to main terminal."
+        input("Press 'enter' to return to the main terminal.")
+        return

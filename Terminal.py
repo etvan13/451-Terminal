@@ -69,8 +69,8 @@ class Terminal:
     # Runs the simple brute force command
     def simple_brute_force_command(self):
         brute_force = SimpleBruteForce(self.newpage) # passing new page function to use in command class
-        output = brute_force.run()
-        return output
+        brute_force.run()
+        return "Back to main terminal."
 
     ## Add additional commands here ##
 

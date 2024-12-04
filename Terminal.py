@@ -1,0 +1,103 @@
+# List needed imports
+import os
+import sys
+
+# Importing command from Commands directory
+from Commands.SimpleBruteForce import* 
+
+# This is the main terminal, it holds all the functionality of the system containing all the commands.
+class Terminal:
+    def __init__(self):
+        # any initialization
+
+        self.commands = {
+            "help": self.show_help,
+            "greetings": self.greet,
+            "skeleton" : self.skeletonCommand,
+            "simple bruteforce": self.simple_brute_force_command,
+            # Additional commands can be added here
+        }
+
+    #####TERMINAL UTILITY#####
+
+    # Clears current screen
+    @staticmethod
+    def newpage():
+        # Clear the console screen
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+    # Header message of terminal
+    def default_message(self):
+        self.newpage()
+        return "Brute Force Terminal\n" + "Type 'help' for a list of commands.\n"
+    
+    # Checks the inputted command for validity returning its output
+    def process_command(self, command):
+        if command in self.commands:
+            response = self.commands[command]()
+        else:
+            response = "Unknown command."
+        return self.default_message() + "\n" + response + "\n"  # Append a newline
+
+    # Runs the current Terminal
+    def run(self):
+        # Start the terminal with the default message
+        print(self.default_message())  
+        while True:
+            command_input = input("> ")
+            command = command_input.lower()
+            output = self.process_command(command)
+            if command == "exit":
+                break
+            
+            print(output)
+
+
+
+    ####COMMANDS####
+    
+    # Prints a list of available commands
+    def show_help(self):
+        command_list = self.commands.keys()
+        help_text = "\n".join(f"- {cmd}" for cmd in command_list)
+        return help_text
+    
+    # Returns a greeting
+    def greet(self):
+        return "Hello Universe!"
+    
+    # Runs the simple brute force command
+    def simple_brute_force_command(self):
+        brute_force = SimpleBruteForce(self.newpage) # passing new page function to use in command class
+        output = brute_force.run()
+        return output
+
+    ## Add additional commands here ##
+
+
+    # **************** HELPFUL REFERENCES *****************
+    # Runs the skeleton class
+    def skeletonCommand(self) :
+        skeletonObject = SkeleClass(self, self.counter) # The additional 'self.counter' just allows use with the coordinates
+        skeletonObject.run() # Runs the 'run()' command in the skeleton class
+        return "Back to main terminal." # Message for returning to the terminal (after the run function finishes, it means your command finished)
+    # ********************************************
+
+    # Concept for adding external commands
+    def add_external_command(self, command_name, command_function):
+        self.commands[command_name] = command_function
+
+    ##################
+
+class SkeleClass:
+    def __init__(self):
+        pass  # Initialize any required variables here
+
+    def run(self):
+        print("Running the Skeleton command.")
+
+
+# Main function to start the terminal
+if __name__ == "__main__":
+    terminal = Terminal()
+    terminal.run()

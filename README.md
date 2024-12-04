@@ -10,3 +10,6 @@ The **Brute Force Terminal** is a modular terminal program designed to execute c
 1. **Simply Run the Terminal**
    ```bash
    Python Terminal.py
+   ```
+
+## Adding Commands

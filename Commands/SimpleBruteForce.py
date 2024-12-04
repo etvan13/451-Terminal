@@ -1,6 +1,6 @@
 import subprocess
 import time  # Import the time module for adding delays
-import readline
+import readline # Get rid of this for security or keep it for convinience
 
 class SimpleBruteForce:
     def __init__(self, newpage):

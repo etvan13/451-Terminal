@@ -1,5 +1,6 @@
 import subprocess
 import time  # Import the time module for adding delays
+import readline
 
 class SimpleBruteForce:
     def __init__(self, newpage):
@@ -26,7 +27,7 @@ class SimpleBruteForce:
                 print("Invalid choice. Please enter 1 or 2.")
 
         print()
-        
+
         for password in password_list:
             try:
                 print(f"Trying password: {password}")

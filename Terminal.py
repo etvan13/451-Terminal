@@ -1,6 +1,7 @@
 # List needed imports
 import os
 import sys
+import readline
 
 # Importing command from Commands directory
 from Commands.SimpleBruteForce import* 
@@ -17,6 +18,7 @@ class Terminal:
             "simple bruteforce": self.simple_brute_force_command,
             # Additional commands can be added here
         }
+        self.running = True
 
     #####TERMINAL UTILITY#####
 
@@ -42,15 +44,14 @@ class Terminal:
     # Runs the current Terminal
     def run(self):
         # Start the terminal with the default message
-        print(self.default_message())  
+        print(self.default_message())
         while True:
-            command_input = input("> ")
-            command = command_input.lower()
-            output = self.process_command(command)
-            if command == "exit":
+            command_input = input("> ").strip().lower()  # Get input and normalize
+            if command_input == "exit":
+                print("Exiting terminal. Goodbye!")
                 break
-            
-            print(output)
+            # Process the command and print the response
+            print(self.process_command(command_input))
 
 
 

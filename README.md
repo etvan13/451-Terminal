@@ -8,8 +8,5 @@ The **Brute Force Terminal** is a modular terminal program designed to execute c
 ## How to Run the Terminal
 
 1. **Simply Run the Terminal**
-   
-   Clone the repository to your local machine using Git:
    ```bash
    Python Terminal.py
-  ```

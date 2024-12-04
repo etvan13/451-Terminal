@@ -1,0 +1,11 @@
+# Byte-compiled Python files
+*.pyc
+__pycache__/
+
+# Compiled C executables
+executables/
+C_Code
+
+# OS-specific files
+.DS_Store
+Thumbs.db

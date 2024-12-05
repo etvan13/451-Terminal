@@ -66,8 +66,6 @@ class ParameterBruteForce:
                     except Exception as e:
                         print(f"Error occurred: {e}")
 
-                    time.sleep(1)
-
             except ValueError:
                 print("Invalid input for password length. Please enter a valid number.")
                 return
@@ -103,8 +101,6 @@ class ParameterBruteForce:
                         print("The executable took too long to respond. Skipping this password.")
                     except Exception as e:
                         print(f"Error occurred: {e}")
-
-                    time.sleep(1)
 
                 length += 1
 

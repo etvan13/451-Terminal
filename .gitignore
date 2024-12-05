@@ -1,6 +1,7 @@
 # Byte-compiled Python files
 *.pyc
 __pycache__/
+Commands/__pycache__
 
 # Compiled C executables
 executables/

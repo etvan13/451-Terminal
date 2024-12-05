@@ -4,7 +4,8 @@ import sys
 import readline
 
 # Importing command from Commands directory
-from Commands.SimpleBruteForce import* 
+from Commands.SimpleBruteForce import*
+from Commands.ParameterBruteForce import* 
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -16,6 +17,8 @@ class Terminal:
             "greetings": self.greet,
             "skeleton" : self.skeletonCommand,
             "simple bruteforce": self.simple_brute_force_command,
+            "parameter bruteforce": self.parameter_brute_force_command,
+
             # Additional commands can be added here
         }
         self.running = True
@@ -73,7 +76,15 @@ class Terminal:
         brute_force.run()
         return "Back to main terminal."
 
+    def parameter_brute_force_command(self):
+        brute_force = ParameterBruteForce(self.newpage) # passing new page function to use in command class
+        brute_force.run()
+        return "Back to main terminal."
+    
     ## Add additional commands here ##
+
+
+
 
 
     # **************** HELPFUL REFERENCES *****************

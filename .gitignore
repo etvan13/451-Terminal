@@ -5,8 +5,11 @@ commands/__pycache__
 
 # Compiled C executables
 executables/*
+!executables/.gitkeep
 c_code/*
+!c_code/.gitkeep
 asm/*
+!asm/.gitkeep
 
 # OS-specific files
 .DS_Store

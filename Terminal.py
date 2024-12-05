@@ -7,6 +7,7 @@ import stat
 # Importing command from Commands directory
 from commands.SimpleBruteForce import*
 from commands.ParameterBruteForce import* 
+from commands.Patch import Patch
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -29,6 +30,7 @@ class Terminal:
             "skeleton" : self.skeletonCommand,
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
+            "patch": self.patch,
             # Additional commands can be added here
         }
         self.running = True
@@ -89,6 +91,11 @@ class Terminal:
     def parameter_brute_force_command(self):
         brute_force = ParameterBruteForce(self.newpage) # passing new page function to use in command class
         brute_force.run()
+        return "Back to main terminal."
+    
+    def patch(self):
+        p = Patch() # passing new page function to use in command class
+        p.run()
         return "Back to main terminal."
     
     ## Add additional commands here ##

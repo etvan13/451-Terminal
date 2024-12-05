@@ -15,6 +15,7 @@ import stat
 # Importing command from Commands directory
 from commands.SimpleBruteForce import*
 from commands.ParameterBruteForce import* 
+from commands.GhidraCommand import*
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -35,6 +36,7 @@ class Terminal:
             "help": self.show_help,
             "disclaimer": self.show_disclaimer,
             "greetings": self.greet,
+            "ghidra reverse": self.ghidra_command,
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
             # Additional commands can be added here
@@ -114,6 +116,12 @@ class Terminal:
         brute_force.run()
         return "Back to main terminal."
     
+        # Example integration into your terminal system
+    def ghidra_command(self):
+        ghidra = GhidraCommand(self.newpage)
+        ghidra.run()
+        return "Back to main terminal."
+
     ## Add additional commands here ##
 
 

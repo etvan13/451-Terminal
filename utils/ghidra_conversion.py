@@ -1,113 +1,241 @@
 import os
 import subprocess
 import argparse
-
+import re
+import shutil
+import time
+from dotenv import load_dotenv
+from tqdm import tqdm
 
 class GhidraReverser:
-    def __init__(self, ghidra_install_dir: str, project_dir: str, script_path: str):
+    def __init__(self):
         """
-        Initialize the reverser with Ghidra paths.
+        Initialize the reverser with paths loaded from environment variables.
         """
-        self.ghidra_install_dir = ghidra_install_dir
-        self.project_dir = project_dir
-        self.script_path = script_path
-        self.asm_dir = "../asm"
-        self.c_code_dir = "../c_code"
+        load_dotenv()
+        script_dir = os.path.dirname(os.path.abspath(__file__))
 
-        # Ensure output directories exist
+        self.ghidra_install_dir = os.getenv("GHIDRA_INSTALL_DIR")
+        if not self.ghidra_install_dir:
+            raise EnvironmentError("GHIDRA_INSTALL_DIR environment variable is not set.")
+
+        self.executables_dir = os.path.abspath(os.path.join(script_dir, "../executables"))
+        self.asm_dir = os.path.abspath(os.path.join(script_dir, "../asm"))
+        self.c_code_dir = os.path.abspath(os.path.join(script_dir, "../c_code"))
+        self.ghidra_project_base_dir = os.path.abspath(os.path.join(script_dir, "ghidra_projects"))
+        self.script_path = os.path.abspath(os.path.join(script_dir, "ExportCode.java"))
+
         os.makedirs(self.asm_dir, exist_ok=True)
         os.makedirs(self.c_code_dir, exist_ok=True)
+        os.makedirs(self.ghidra_project_base_dir, exist_ok=True)
 
-    def run_ghidra_headless(self, executable_path: str, architecture: str = "gcc_x86-64"):
-        """
-        Run Ghidra in headless mode to decompile the executable.
-        """
+    def run_ghidra_headless(self, executable_path: str, architecture: str = None):
         ghidra_headless = os.path.join(self.ghidra_install_dir, "support", "analyzeHeadless")
-        output_dir = os.path.dirname(executable_path)
         executable_name = os.path.basename(executable_path)
+        executable_dir = os.path.dirname(executable_path)
+
+        ghidra_project_dir = os.path.join(self.ghidra_project_base_dir, f"project_{executable_name}")
+        os.makedirs(ghidra_project_dir, exist_ok=True)
 
         command = [
             ghidra_headless,
-            self.project_dir,
+            ghidra_project_dir,
             "MyProject",
             "-import",
             executable_path,
             "-postScript",
             os.path.basename(self.script_path),
-            output_dir
+            ghidra_project_dir,
+            "-scriptPath",
+            os.path.dirname(self.script_path),
+            "-overwrite"
         ]
+        if architecture:
+            command += ["-processor", architecture]
 
-        print(f"Running Ghidra headless mode for: {executable_path}")
-        print(f"Using architecture: {architecture}")
-        subprocess.run(command, check=True)
-        return output_dir, executable_name
+        print(f"Running Ghidra headless mode for: {executable_name}")
 
-    def move_output_files(self, output_dir: str, executable_name: str):
+        # Use the updated progress bar function
+        self.show_progress_bar(command=command, total_time=50)
+
+        return executable_dir, executable_name, ghidra_project_dir
+
+    def move_output_files(self, executable_name: str, ghidra_project_dir: str, clean: bool):
         """
-        Move Ghidra output files to their respective directories.
+        Move Ghidra output files to their respective directories and optionally clean them.
         """
-        c_file = os.path.join(output_dir, f"{executable_name}.c")
-        asm_file = os.path.join(output_dir, f"{executable_name}.asm")
+        # Paths to the generated files
+        c_file = os.path.join(ghidra_project_dir, f"{executable_name}.c")
+        asm_file = os.path.join(ghidra_project_dir, f"{executable_name}.asm")
 
+        # Move C file
         if os.path.exists(c_file):
-            os.rename(c_file, os.path.join(self.c_code_dir, f"{executable_name}.c"))
-            print(f"Moved C file to {self.c_code_dir}")
+            dest_c_file = self.get_unique_filename(self.c_code_dir, f"{executable_name}.c")
+            if clean:
+                cleaned_c = self.clean_c_output(c_file)
+                with open(dest_c_file, "w") as f:
+                    f.write(cleaned_c)
+                os.remove(c_file)  # Remove the uncleaned file
+            else:
+                shutil.move(c_file, dest_c_file)
+            print(f"Processed C file moved to {self.c_code_dir}")
 
+        # Move ASM file
         if os.path.exists(asm_file):
-            os.rename(asm_file, os.path.join(self.asm_dir, f"{executable_name}.asm"))
-            print(f"Moved ASM file to {self.asm_dir}")
-        else:
-            print(f"ASM file not found for {executable_name}")
+            dest_asm_file = self.get_unique_filename(self.asm_dir, f"{executable_name}.asm")
+            if clean:
+                cleaned_asm = self.clean_asm_output(asm_file)
+                with open(dest_asm_file, "w") as f:
+                    f.write(cleaned_asm)
+                os.remove(asm_file)  # Remove the uncleaned file
+            else:
+                shutil.move(asm_file, dest_asm_file)
+            print(f"Processed ASM file moved to {self.asm_dir}")
 
-    def reverse_executable(self, executable_path: str, architecture: str = "gcc_x86-64"):
+    def get_unique_filename(self, directory: str, filename: str) -> str:
         """
-        Reverse the given executable and organize the output.
+        Generate a unique filename if the file already exists by appending (1), (2), etc.
         """
-        output_dir, executable_name = self.run_ghidra_headless(executable_path, architecture)
-        self.move_output_files(output_dir, executable_name)
+        base, extension = os.path.splitext(filename)
+        counter = 1
+        unique_filename = filename
+        while os.path.exists(os.path.join(directory, unique_filename)):
+            unique_filename = f"{base}({counter}){extension}"
+            counter += 1
+        return os.path.join(directory, unique_filename)
 
+    def show_progress_bar(self, command, total_time=50):
+        """
+        Show a time-based progress bar while a subprocess is running.
+        """
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        step_time = total_time / 100  # Calculate time per progress step (100 steps total)
+
+        with tqdm(total=100, desc="Processing with Ghidra", bar_format="{l_bar}{bar} [ time elapsed: {elapsed} ]") as progress_bar:
+            for _ in range(100):  # Simulate 100 steps of progress
+                if process.poll() is not None:  # Check if the process has finished
+                    break
+                time.sleep(step_time)
+                progress_bar.update(1)
+            
+            # If the process finishes early or is still running, adjust the bar
+            if process.poll() is None:
+                process.wait()  # Wait for the process to finish
+            progress_bar.n = 100  # Set to 100%
+            progress_bar.last_print_n = 100
+            progress_bar.close()
+        
+        stdout, stderr = process.communicate()
+        if process.returncode != 0:
+            print(f"Error during Ghidra analysis: {stderr.decode()}")
+            raise subprocess.CalledProcessError(process.returncode, command)
+
+    def clean_c_output(self, c_file: str) -> str:
+        """
+        Clean and format C output for readability.
+        """
+        with open(c_file, "r") as file:
+            lines = file.readlines()
+
+        cleaned_lines = []
+        for line in lines:
+            if "WARNING" in line or "ram" in line or "BAD" in line:
+                continue
+            cleaned_lines.append(line.rstrip())
+        return "\n".join(cleaned_lines)
+
+    def clean_asm_output(self, asm_file: str) -> str:
+        """
+        Clean and format ASM output for readability.
+        """
+        with open(asm_file, "r") as file:
+            lines = file.readlines()
+
+        cleaned_lines = []
+        for line in lines:
+            if re.match(r"^\?\? ", line):  # Skip noisy placeholders
+                continue
+            cleaned_lines.append(line.rstrip())
+        return "\n".join(cleaned_lines)
+
+    def reverse_executable(self, executable_path: str, architecture: str = None, clean: bool = True, keep_project: bool = False):
+        """
+        Reverse the given executable and optionally clean the output.
+        """
+        executable_dir, executable_name, ghidra_project_dir = self.run_ghidra_headless(executable_path, architecture)
+        self.move_output_files(executable_name, ghidra_project_dir, clean)
+
+        if not keep_project:
+            print("Cleaning up Ghidra project directory...")
+            shutil.rmtree(ghidra_project_dir, ignore_errors=True)
+            # Optionally remove the base project directory if empty
+            if not os.listdir(self.ghidra_project_base_dir):
+                shutil.rmtree(self.ghidra_project_base_dir, ignore_errors=True)
+
+    def cleanup_executable_directory(self, executable_dir: str, executable_name: str):
+        """
+        Remove any output files from the executables directory.
+        """
+        c_file = os.path.join(executable_dir, f"{executable_name}.c")
+        asm_file = os.path.join(executable_dir, f"{executable_name}.asm")
+        if os.path.exists(c_file):
+            os.remove(c_file)
+        if os.path.exists(asm_file):
+            os.remove(asm_file)
 
 def main():
-    parser = argparse.ArgumentParser(description="Reverse an executable using Ghidra.")
+    parser = argparse.ArgumentParser(
+        description="Reverse an executable using Ghidra in headless mode."
+    )
     parser.add_argument(
         "executable",
-        help="Path to the executable file to reverse",
+        help="Path to the executable file (full path or relative name if in ../executables).",
     )
     parser.add_argument(
-        "--arch",
-        default="gcc_x86-64",
-        help="Architecture type (default: gcc_x86-64)",
+        "--arch", 
+        help="Specify architecture (e.g., x86:LE:64). Defaults to auto-detection.",
+        default=None
     )
     parser.add_argument(
-        "--ghidra",
-        default="/path/to/ghidra",
-        help="Path to the Ghidra installation directory",
+        "--clean", 
+        action="store_true", 
+        help="Clean the output (default: True).",
     )
     parser.add_argument(
-        "--project",
-        default="/path/to/ghidra_project",
-        help="Path to the Ghidra project directory",
+        "--no-clean", 
+        action="store_true", 
+        help="Do not clean the output.",
     )
     parser.add_argument(
-        "--script",
-        default="/path/to/ExportCode.java",
-        help="Path to the Ghidra script",
+        "--keep-project", 
+        action="store_true", 
+        help="Keep the Ghidra project directory (default: False).",
     )
 
     args = parser.parse_args()
 
-    reverser = GhidraReverser(
-        ghidra_install_dir=args.ghidra,
-        project_dir=args.project,
-        script_path=args.script
+    reverser = GhidraReverser()
+
+    executable_path = (
+        args.executable if os.path.isabs(args.executable)
+        else os.path.join(reverser.executables_dir, args.executable)
     )
 
-    try:
-        reverser.reverse_executable(args.executable, args.arch)
-        print("Reversal complete.")
-    except Exception as e:
-        print(f"Error during reversal: {e}")
+    if not os.path.exists(executable_path):
+        print(f"Error: Executable not found at {executable_path}")
+        return
 
+    try:
+        reverser.reverse_executable(
+            executable_path,
+            architecture=args.arch,
+            clean=not args.no_clean,  # Default to clean unless --no-clean is specified
+            keep_project=args.keep_project,
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred during Ghidra analysis: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     main()

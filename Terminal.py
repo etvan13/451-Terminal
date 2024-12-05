@@ -6,7 +6,7 @@ import readline
 # Importing command from Commands directory
 from Commands.SimpleBruteForce import*
 from Commands.ParameterBruteForce import* 
-
+from Commands.mulitBF import*
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
     def __init__(self):
@@ -18,6 +18,7 @@ class Terminal:
             "skeleton" : self.skeletonCommand,
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
+            "bf": self.bf_multiprocessing,
             # Additional commands can be added here
         }
         self.running = True
@@ -80,6 +81,11 @@ class Terminal:
         brute_force.run()
         return "Back to main terminal."
     
+    def bf_multiprocessing(self):
+        brute_force = multiBF(self.newpage)
+        brute_force.run()
+        return "Back to main terminal."
+
     ## Add additional commands here ##
 
 

@@ -31,7 +31,7 @@ class Terminal:
     # Header message of terminal
     def default_message(self):
         self.newpage()
-        return "Brute Force Terminal\n" + "Type 'help' for a list of commands.\n"
+        return "Brute Force Terminal\n" + "Type 'help' for a list of commands, or 'exit' to quit.\n"
     
     # Checks the inputted command for validity returning its output
     def process_command(self, command):

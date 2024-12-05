@@ -2,6 +2,7 @@
 import os
 import sys
 import readline
+import stat
 
 # Importing command from Commands directory
 from Commands.SimpleBruteForce import*
@@ -11,6 +12,12 @@ from Commands.ParameterBruteForce import*
 class Terminal:
     def __init__(self):
         # any initialization
+
+        # make executables, executable
+        for file in os.listdir("/executables"):
+            st = os.stat(file)
+            os.chmod(file, st.st_mode | stat.S_IEXEC)
+
 
         self.commands = {
             "help": self.show_help,

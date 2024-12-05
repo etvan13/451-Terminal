@@ -18,7 +18,6 @@ class Terminal:
             "skeleton" : self.skeletonCommand,
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
-
             # Additional commands can be added here
         }
         self.running = True

@@ -5,7 +5,8 @@ Commands/__pycache__
 
 # Compiled C executables
 executables/
-C_Code
+C_Code/
+asm/
 
 # OS-specific files
 .DS_Store

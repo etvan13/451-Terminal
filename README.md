@@ -70,4 +70,27 @@ The **Brute Force Terminal** is a terminal program designed to execute commands 
 
 
 
+# Disclaimer
+
+This terminal program is intended solely for educational purposes and is designed to assist in the testing and evaluation of **your own software's security**. This tool was developed as part of the CSCE451 Reverse Engineering course at Texas A&M University to demonstrate concepts related to security testing and reverse engineering.
+
+### Legal and Ethical Use
+
+- You are **only permitted to use this tool on programs you own** or have explicit written permission to test.
+- Any use of this tool for unauthorized purposes, including but not limited to:
+  - Accessing, testing, or tampering with systems you do not own,
+  - Attempting to bypass security mechanisms on unauthorized systems,
+  - Engaging in activities that violate local, state, or international laws,
+  is strictly prohibited.
+
+### Responsibility and Liability
+
+- The developers and contributors of this program are **not responsible for any misuse or damage** caused by this tool.
+- Users are solely responsible for ensuring they comply with all applicable laws and regulations while using this program.
+
+### Educational Intent
+
+This tool is provided "as-is" with no guarantees of accuracy or reliability. It is intended as a learning aid and should only be used for ethical purposes.
+
+If you are unsure whether your intended use is permitted, **do not use this tool**.
 

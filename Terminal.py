@@ -5,18 +5,22 @@ import readline
 import stat
 
 # Importing command from Commands directory
-from Commands.SimpleBruteForce import*
-from Commands.ParameterBruteForce import* 
+from commands.SimpleBruteForce import*
+from commands.ParameterBruteForce import* 
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
     def __init__(self):
         # any initialization
 
+        executables_path = "executables/"
+
         # make executables, executable
-        for file in os.listdir("/executables"):
-            st = os.stat(file)
-            os.chmod(file, st.st_mode | stat.S_IEXEC)
+        for file in os.listdir(executables_path):
+            path = executables_path + file
+            st = os.stat(path)
+
+            os.chmod(path, st.st_mode | stat.S_IEXEC)
 
 
         self.commands = {

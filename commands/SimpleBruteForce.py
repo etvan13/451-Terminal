@@ -9,6 +9,7 @@ class SimpleBruteForce:
     def __init__(self, newpage):
         self.newpage = newpage
         self.password_dir = "password_lists/"
+        self.executables_dir = "executables/"
         self.validator = None  # Initialize as None; will set later
     
     def list_files_in_directory(self, directory):
@@ -31,63 +32,91 @@ class SimpleBruteForce:
         logging.info("PasswordValidator setup complete with validation methods.")
     
     def run(self):
+        """
+        Run the simple brute force command interactively.
+        """
         self.newpage()
-        print("Welcome to the simple bruteforce command. This takes an executable path \nas input and tests simple passwords on its input.")
-        executable = input("Enter the path to the executable (e.g., ./executables/password_checker): ").strip()
-    
-        # Setup the PasswordValidator with the executable
-        self.setup_validator(executable)
-    
-        files = self.list_files_in_directory(self.password_dir)
-    
-        if not files:
-            print(f"No files found in directory '{self.password_dir}'.")
-            sys.exit(0)
-    
-        for idx, file in enumerate(files, start=1):
+        print("Welcome to the Simple Brute Force Command.")
+        print("This command tests simple passwords against an executable's input.")
+
+        # Resolve absolute paths for executables and password lists
+        executables_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../", self.executables_dir))
+        password_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../", self.password_dir))
+
+        # List available executables in the executables directory
+        executables = [
+            f for f in os.listdir(executables_dir)
+            if os.path.isfile(os.path.join(executables_dir, f))
+        ]
+        if not executables:
+            print(f"No executables found in the directory '{executables_dir}'.")
+            return "Back to main terminal."
+
+        print("\nAvailable executables:")
+        for i, exe in enumerate(executables, start=1):
+            print(f"{i}: {exe}")
+
+        choice = input("\nEnter the number of the executable to use, or the full path: ").strip()
+        if choice.isdigit() and 1 <= int(choice) <= len(executables):
+            executable_path = os.path.join(executables_dir, executables[int(choice) - 1])
+        else:
+            executable_path = os.path.abspath(choice)  # Allow absolute path input
+
+        if not os.path.exists(executable_path):
+            print(f"Error: Executable not found at {executable_path}")
+            return "Back to main terminal."
+
+        # List available password files
+        password_files = [
+            f for f in os.listdir(password_dir)
+            if os.path.isfile(os.path.join(password_dir, f))
+        ]
+        if not password_files:
+            print(f"No password files found in directory '{password_dir}'.")
+            return "Back to main terminal."
+
+        print("\nAvailable password files:")
+        for idx, file in enumerate(password_files, start=1):
             print(f"{idx}. {file}")
-    
+
         # Ask the user to pick a password list
-        choice = 1
         while True:
             try:
-                choice = int(input("\nEnter the number of the file you want to read: "))
-                if choice < 1 or choice > len(files):
-                    raise ValueError("Invalid choice.")
-                break
-            except ValueError as e:
-                print("Error: Please enter a valid number corresponding to a file.")
-                sys.exit(1)
-    
-        print()
-    
-        selected_file = os.path.join(self.password_dir, files[choice - 1]) 
-    
+                password_choice = int(input("\nEnter the number of the file you want to use: "))
+                if 1 <= password_choice <= len(password_files):
+                    password_file_path = os.path.join(password_dir, password_files[password_choice - 1])
+                    break
+                else:
+                    print("Error: Invalid choice. Please select a valid number.")
+            except ValueError:
+                print("Error: Please enter a number.")
+
+        # Start brute force process
+        print("\nStarting brute force process...")
         try:
-            with open(selected_file, 'r') as file:
+            self.setup_validator(executable_path)
+            with open(password_file_path, 'r') as file:
                 for line in file:
                     password = line.strip()
                     if not password:
                         continue  # Skip empty lines
                     print(f"Trying password: {password}")
-                    
+
                     # Use the PasswordValidator to validate the password
                     is_valid = self.validator.validate(password)
-                    
+
                     if is_valid:
                         print()
-                        print(f"Success! The password is '{password}' for {executable}")
+                        print(f"Success! The password is '{password}' for {executable_path}")
                         input("Press 'enter' to return to the main terminal.")
                         return
                     else:
                         print("Incorrect password, trying the next one...")
-    
         except Exception as e:
-            print(f"Error reading file '{selected_file}': {e}")
-            sys.exit(1)
-    
-        print()
-        print("All passwords tested. No success.")
+            print(f"An error occurred during brute force: {e}")
+            return "Back to main terminal."
+
+        print("\nAll passwords tested. No success.")
         input("Press 'enter' to return to the main terminal.")
         return
 

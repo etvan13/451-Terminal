@@ -15,7 +15,9 @@ import stat
 # Importing command from Commands directory
 from commands.SimpleBruteForce import*
 from commands.ParameterBruteForce import* 
-from commands.GhidraCommand import*
+from commands.Ghidra import*
+from commands.StringSearch import*
+from commands.Binwalk import*
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -31,7 +33,6 @@ class Terminal:
 
             os.chmod(path, st.st_mode | stat.S_IEXEC)
 
-
         self.commands = {
             "help": self.show_help,
             "disclaimer": self.show_disclaimer,
@@ -39,7 +40,8 @@ class Terminal:
             "ghidra reverse": self.ghidra_command,
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
-            # Additional commands can be added here
+            "strings": self.string_search_command,
+            "binwalk": self.binwalk_command,
         }
         self.running = True
 
@@ -116,12 +118,21 @@ class Terminal:
         brute_force.run()
         return "Back to main terminal."
     
-        # Example integration into your terminal system
     def ghidra_command(self):
         ghidra = GhidraCommand(self.newpage)
         ghidra.run()
         return "Back to main terminal."
+    
+    def string_search_command(self):
+        string_search = StringSearchCommand(self.newpage)
+        string_search.run()
+        return "Back to main terminal."
 
+    def binwalk_command(self):
+        binwalk = BinwalkCommand(self.newpage)
+        binwalk.run()
+        return "Back to main terminal."
+    
     ## Add additional commands here ##
 
 

@@ -11,6 +11,9 @@ c_code/*
 asm/*
 !asm/.gitkeep
 
+# Data stuff
+data/*
+
 # OS-specific files
 .DS_Store
 Thumbs.db

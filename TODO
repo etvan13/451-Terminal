@@ -1,2 +1,5 @@
 Implement a cleaning command (Something that makes the c easier to look at)
 
+Analyze c file and point out interesting aspects (like time()) - Brian
+
+Possibly refactor c file to make it executable (not gonna be easy)

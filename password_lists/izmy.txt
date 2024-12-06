@@ -1129,6 +1129,7 @@ pHd4mmskprogamer
 pangeran kutub
 pascal(2002)
 passcDWQR#$Rcxsc
+password
 password postgres
 password1234567ABC
 password1Xpostgres

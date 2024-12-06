@@ -1,5 +1,6 @@
 # C3/commands/ghidra_command.py
 import os
+import subprocess
 
 from utils.ghidra_conversion import GhidraReverser
 
@@ -44,10 +45,6 @@ class GhidraCommand:
             print(f"Error: Executable not found at {executable_path}")
             return "Back to main terminal."
 
-        # Prompt for cleaning
-        clean_input = input("Clean output? (Default is yes) Y/N: ").strip().lower()
-        clean = clean_input != "n"
-
         # Prompt for architecture
         arch_input = input("Enter specific architecture? (Default is auto-detection) Y/N: ").strip().lower()
         arch = input("Enter architecture (e.g., x86:LE:64): ").strip() if arch_input == "y" else None
@@ -61,11 +58,12 @@ class GhidraCommand:
             self.reverser.reverse_executable(
                 executable_path,
                 architecture=arch,
-                clean=clean,
                 keep_project=keep_project,
             )
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred during Ghidra analysis: {e}")
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An unexpected error occurred: {e}")
 
         input("Finished processing. Press 'enter' to return back to the main terminal.")
         return

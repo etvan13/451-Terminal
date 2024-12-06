@@ -7,6 +7,7 @@ import time
 from dotenv import load_dotenv
 from tqdm import tqdm
 
+
 class GhidraReverser:
     def __init__(self):
         """
@@ -60,9 +61,9 @@ class GhidraReverser:
 
         return executable_dir, executable_name, ghidra_project_dir
 
-    def move_output_files(self, executable_name: str, ghidra_project_dir: str, clean: bool):
+    def move_output_files(self, executable_name: str, ghidra_project_dir: str):
         """
-        Move Ghidra output files to their respective directories and optionally clean them.
+        Move Ghidra output files to their respective directories without cleaning.
         """
         # Paths to the generated files
         c_file = os.path.join(ghidra_project_dir, f"{executable_name}.c")
@@ -71,26 +72,14 @@ class GhidraReverser:
         # Move C file
         if os.path.exists(c_file):
             dest_c_file = self.get_unique_filename(self.c_code_dir, f"{executable_name}.c")
-            if clean:
-                cleaned_c = self.clean_c_output(c_file)
-                with open(dest_c_file, "w") as f:
-                    f.write(cleaned_c)
-                os.remove(c_file)  # Remove the uncleaned file
-            else:
-                shutil.move(c_file, dest_c_file)
-            print(f"Processed C file moved to {self.c_code_dir}")
+            shutil.move(c_file, dest_c_file)
+            print(f"C file moved to {self.c_code_dir}")
 
         # Move ASM file
         if os.path.exists(asm_file):
             dest_asm_file = self.get_unique_filename(self.asm_dir, f"{executable_name}.asm")
-            if clean:
-                cleaned_asm = self.clean_asm_output(asm_file)
-                with open(dest_asm_file, "w") as f:
-                    f.write(cleaned_asm)
-                os.remove(asm_file)  # Remove the uncleaned file
-            else:
-                shutil.move(asm_file, dest_asm_file)
-            print(f"Processed ASM file moved to {self.asm_dir}")
+            shutil.move(asm_file, dest_asm_file)
+            print(f"ASM file moved to {self.asm_dir}")
 
     def get_unique_filename(self, directory: str, filename: str) -> str:
         """
@@ -130,40 +119,12 @@ class GhidraReverser:
             print(f"Error during Ghidra analysis: {stderr.decode()}")
             raise subprocess.CalledProcessError(process.returncode, command)
 
-    def clean_c_output(self, c_file: str) -> str:
+    def reverse_executable(self, executable_path: str, architecture: str = None, keep_project: bool = False):
         """
-        Clean and format C output for readability.
-        """
-        with open(c_file, "r") as file:
-            lines = file.readlines()
-
-        cleaned_lines = []
-        for line in lines:
-            if "WARNING" in line or "ram" in line or "BAD" in line:
-                continue
-            cleaned_lines.append(line.rstrip())
-        return "\n".join(cleaned_lines)
-
-    def clean_asm_output(self, asm_file: str) -> str:
-        """
-        Clean and format ASM output for readability.
-        """
-        with open(asm_file, "r") as file:
-            lines = file.readlines()
-
-        cleaned_lines = []
-        for line in lines:
-            if re.match(r"^\?\? ", line):  # Skip noisy placeholders
-                continue
-            cleaned_lines.append(line.rstrip())
-        return "\n".join(cleaned_lines)
-
-    def reverse_executable(self, executable_path: str, architecture: str = None, clean: bool = True, keep_project: bool = False):
-        """
-        Reverse the given executable and optionally clean the output.
+        Reverse the given executable without cleaning the output.
         """
         executable_dir, executable_name, ghidra_project_dir = self.run_ghidra_headless(executable_path, architecture)
-        self.move_output_files(executable_name, ghidra_project_dir, clean)
+        self.move_output_files(executable_name, ghidra_project_dir)
 
         if not keep_project:
             print("Cleaning up Ghidra project directory...")
@@ -172,16 +133,6 @@ class GhidraReverser:
             if not os.listdir(self.ghidra_project_base_dir):
                 shutil.rmtree(self.ghidra_project_base_dir, ignore_errors=True)
 
-    def cleanup_executable_directory(self, executable_dir: str, executable_name: str):
-        """
-        Remove any output files from the executables directory.
-        """
-        c_file = os.path.join(executable_dir, f"{executable_name}.c")
-        asm_file = os.path.join(executable_dir, f"{executable_name}.asm")
-        if os.path.exists(c_file):
-            os.remove(c_file)
-        if os.path.exists(asm_file):
-            os.remove(asm_file)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -195,16 +146,6 @@ def main():
         "--arch", 
         help="Specify architecture (e.g., x86:LE:64). Defaults to auto-detection.",
         default=None
-    )
-    parser.add_argument(
-        "--clean", 
-        action="store_true", 
-        help="Clean the output (default: True).",
-    )
-    parser.add_argument(
-        "--no-clean", 
-        action="store_true", 
-        help="Do not clean the output.",
     )
     parser.add_argument(
         "--keep-project", 
@@ -229,7 +170,6 @@ def main():
         reverser.reverse_executable(
             executable_path,
             architecture=args.arch,
-            clean=not args.no_clean,  # Default to clean unless --no-clean is specified
             keep_project=args.keep_project,
         )
     except subprocess.CalledProcessError as e:

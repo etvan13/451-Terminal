@@ -122,8 +122,8 @@ class Terminal:
     
     def patch(self):
         p = Patch() # passing new page function to use in command class
-        p.run()
-        return "Back to main terminal."
+        print(p.run())
+        return "Patcher done"
     
     def ghidra_command(self):
         ghidra = GhidraCommand(self.newpage)

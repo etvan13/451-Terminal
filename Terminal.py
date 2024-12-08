@@ -16,6 +16,7 @@ import stat
 from commands.SimpleBruteForce import*
 from commands.ParameterBruteForce import* 
 from commands.GhidraCommand import*
+from commands.DataDecoder import*
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -39,6 +40,7 @@ class Terminal:
             "ghidra reverse": self.ghidra_command,
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
+            "data decoder": self.data_decoder_command
             # Additional commands can be added here
         }
         self.running = True
@@ -120,6 +122,11 @@ class Terminal:
     def ghidra_command(self):
         ghidra = GhidraCommand(self.newpage)
         ghidra.run()
+        return "Back to main terminal."
+    
+    def data_decoder_command(self):
+        decoder = DataDecoder(self.newpage)
+        decoder.run()
         return "Back to main terminal."
 
     ## Add additional commands here ##

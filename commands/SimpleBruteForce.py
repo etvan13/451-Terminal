@@ -31,6 +31,46 @@ class SimpleBruteForce:
         # Add more methods as needed
         logging.info("PasswordValidator setup complete with validation methods.")
     
+    def process_file(self, file_path, executable_path):
+        # Start brute force process
+        print("\nStarting brute force process...")
+        try:
+            self.setup_validator(executable_path)
+            with open(file_path, 'r') as file:
+                for line in file:
+                    password = line.strip()
+                    if not password:
+                        continue  # Skip empty lines
+                    print(f"Trying password: {password}")
+
+                    # Use the PasswordValidator to validate the password
+                    is_valid = self.validator.validate(password)
+
+                    if is_valid:
+                        print()
+                        print(f"Success! The password is '{password}' for {executable_path}")
+                        input("Press 'enter' to return to the main terminal.")
+                        return is_valid
+                    else:
+                        print("Incorrect password, trying the next one...")
+        except Exception as e:
+            print(f"An error occurred during brute force: {e}")
+            return "Back to main terminal."
+
+        print("\nAll passwords tested. No success.")
+        input("Press 'enter' to return to the main terminal.")
+        return False
+    
+
+    def process_all_files(self, password_dir, files, executable_path):
+        # Start brute force process
+        for file in files:
+            password_file_path = os.path.join(password_dir, file)
+            result = self.process_file(password_file_path, executable_path)
+            if result == True:
+                return
+
+
     def run(self):
         """
         Run the simple brute force command interactively.
@@ -78,47 +118,28 @@ class SimpleBruteForce:
         print("\nAvailable password files:")
         for idx, file in enumerate(password_files, start=1):
             print(f"{idx}. {file}")
+        print(f"{len(password_files) + 1}. Process all files")
 
+
+        password_choice = 0
         # Ask the user to pick a password list
         while True:
             try:
-                password_choice = int(input("\nEnter the number of the file you want to use: "))
-                if 1 <= password_choice <= len(password_files):
-                    password_file_path = os.path.join(password_dir, password_files[password_choice - 1])
+                password_choice = int(input("\nEnter the number of the file you want to read (or choose 'Process all files'): "))
+                if 1 <= password_choice <= len(password_files) + 1:
                     break
                 else:
                     print("Error: Invalid choice. Please select a valid number.")
             except ValueError:
                 print("Error: Please enter a number.")
 
-        # Start brute force process
-        print("\nStarting brute force process...")
-        try:
-            self.setup_validator(executable_path)
-            with open(password_file_path, 'r') as file:
-                for line in file:
-                    password = line.strip()
-                    if not password:
-                        continue  # Skip empty lines
-                    print(f"Trying password: {password}")
-
-                    # Use the PasswordValidator to validate the password
-                    is_valid = self.validator.validate(password)
-
-                    if is_valid:
-                        print()
-                        print(f"Success! The password is '{password}' for {executable_path}")
-                        input("Press 'enter' to return to the main terminal.")
-                        return
-                    else:
-                        print("Incorrect password, trying the next one...")
-        except Exception as e:
-            print(f"An error occurred during brute force: {e}")
-            return "Back to main terminal."
-
-        print("\nAll passwords tested. No success.")
-        input("Press 'enter' to return to the main terminal.")
-        return
+        
+        if password_choice == len(password_files) + 1:
+            self.process_all_files(password_dir, password_files, executable_path)
+        else:
+            password_file_path = os.path.join(password_dir, password_files[password_choice - 1])
+            self.process_file(password_file_path, executable_path)
+        
 
 # Example usage
 if __name__ == "__main__":

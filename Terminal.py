@@ -1,3 +1,11 @@
+"""
+DISCLAIMER:
+This program is intended solely for educational purposes and the testing of your own software's security.
+Use of this tool on unauthorized systems or for illegal purposes is strictly prohibited.
+
+The developers are not responsible for any misuse or damage caused by this tool.
+"""
+
 # List needed imports
 import os
 import sys
@@ -5,9 +13,11 @@ import readline
 import stat
 
 # Importing command from Commands directory
-from commands.SimpleBruteForce import*
-from commands.ParameterBruteForce import* 
-from commands.Patch import Patch
+from commands.SimpleBruteForce import *
+from commands.ParameterBruteForce import * 
+from commands.GhidraCommand import *
+from commands.DataDecoder import *
+from commands.Patch import *
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -26,11 +36,13 @@ class Terminal:
 
         self.commands = {
             "help": self.show_help,
+            "disclaimer": self.show_disclaimer,
             "greetings": self.greet,
-            "skeleton" : self.skeletonCommand,
+            "ghidra reverse": self.ghidra_command,
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
             "patch": self.patch,
+            "data decoder": self.data_decoder_command
             # Additional commands can be added here
         }
         self.running = True
@@ -69,7 +81,6 @@ class Terminal:
             print(self.process_command(command_input))
 
 
-
     ####COMMANDS####
     
     # Prints a list of available commands
@@ -78,6 +89,22 @@ class Terminal:
         help_text = "\n".join(f"- {cmd}" for cmd in command_list)
         return help_text
     
+    # Returns Disclaimer
+    def show_disclaimer(self):
+        disclaimer = """
+    **************************************
+    DISCLAIMER:
+    This program is intended solely for educational purposes 
+    and the testing of your own software's security.Unauthorized 
+    use, including testing systems without permission, is 
+    strictly prohibited.
+
+    The developers are not responsible for any misuse or damage 
+    caused by this tool. Check the 'README.md' for more.
+    **************************************
+        """
+        return disclaimer
+        
     # Returns a greeting
     def greet(self):
         return "Hello Universe!"
@@ -98,26 +125,21 @@ class Terminal:
         p.run()
         return "Back to main terminal."
     
+    def ghidra_command(self):
+        ghidra = GhidraCommand(self.newpage)
+        ghidra.run()
+        return "Back to main terminal."
+    
+    def data_decoder_command(self):
+        decoder = DataDecoder(self.newpage)
+        decoder.run()
+        return "Back to main terminal."
+
     ## Add additional commands here ##
 
 
 
-
-
-    # **************** HELPFUL REFERENCES *****************
-    # Runs the skeleton class
-    def skeletonCommand(self) :
-        skeletonObject = SkeleClass(self, self.counter) # The additional 'self.counter' just allows use with the coordinates
-        skeletonObject.run() # Runs the 'run()' command in the skeleton class
-        return "Back to main terminal." # Message for returning to the terminal (after the run function finishes, it means your command finished)
-    # ********************************************
-
-    # Concept for adding external commands
-    def add_external_command(self, command_name, command_function):
-        self.commands[command_name] = command_function
-
-    ##################
-
+### Example command class ###
 class SkeleClass:
     def __init__(self):
         pass  # Initialize any required variables here

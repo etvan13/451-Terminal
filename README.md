@@ -1,7 +1,7 @@
 # Brute Force Terminal
 
 ## Overview
-The **Brute Force Terminal** is a terminal program designed to execute commands for various functionalities, for brute-forcing passwords. It supports extensibility by allowing new commands to be added easily.
+The **Brute Force Terminal** is a terminal program designed to execute commands for various functionalities, for reversing binaries. It supports extensibility by allowing new commands to be added easily.
 
 ---
 

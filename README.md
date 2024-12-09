@@ -38,17 +38,21 @@ The **Brute Force Terminal** is a terminal program designed to execute commands 
         ```
 3. Add the Command to the Terminal
 
-   * In the Terminal class, update the self.commands dictionary to include your new command:
-        ```bash
-        self.commands = {
-          "help": self.show_help,
-          "greetings": self.greet,
-          "skeleton": self.skeletonCommand,
-          "simple bruteforce": self.simple_brute_force_command,
-          "newcommand": self.new_command_handler,  # Add your new command here
-        }
-        ```
-   * Define a handler method for the command in the Terminal class:
+     * Update the self.commands Dictionary
+     Add your new command to the self.commands dictionary in the Terminal class. Each entry should be a tuple where:
+          * The first element is the handler method for the command.
+          * The second element is a short description of what the command does. This will be displayed when the user types help <command>. 
+
+          ```bash
+               self.commands = {
+                    "help": (self.show_help, "Displays a list of commands or details for a specific command."),
+                    "greetings": (self.greet, "Displays a greeting message."),
+                    "skeleton": (self.skeletonCommand, "A placeholder skeleton command."),
+                    "simple bruteforce": (self.simple_brute_force_command, "Executes a simple brute force attack."),
+                    "newcommand": (self.new_command_handler, "Performs the functionality of the new command."),  # Add your new command here
+               }
+          ```
+     * Define a handler method for the command in the Terminal class:
         ```bash
           def new_command_handler(self):
              new_command = NewCommand()

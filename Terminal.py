@@ -18,6 +18,7 @@ from commands.ParameterBruteForce import *
 from commands.GhidraCommand import *
 from commands.DataDecoder import *
 from commands.Patch import *
+from commands.calculateTime import*
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:

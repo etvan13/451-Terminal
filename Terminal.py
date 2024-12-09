@@ -13,11 +13,11 @@ import readline
 import stat
 
 # Importing command from Commands directory
-from commands.SimpleBruteForce import*
-from commands.ParameterBruteForce import* 
-from commands.GhidraCommand import*
-from commands.DataDecoder import*
-from commands.calculateTime import*
+from commands.SimpleBruteForce import *
+from commands.ParameterBruteForce import * 
+from commands.GhidraCommand import *
+from commands.DataDecoder import *
+from commands.Patch import *
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -41,6 +41,7 @@ class Terminal:
             "ghidra reverse": self.ghidra_command,
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
+            "patch": self.patch,
             "data decoder": self.data_decoder_command,
             "time" : self.timeEstimate
             # Additional commands can be added here
@@ -120,7 +121,11 @@ class Terminal:
         brute_force.run()
         return "Back to main terminal."
     
-        # Example integration into your terminal system
+    def patch(self):
+        p = Patch() # passing new page function to use in command class
+        print(p.run())
+        return "Patcher done"
+    
     def ghidra_command(self):
         ghidra = GhidraCommand(self.newpage)
         ghidra.run()

@@ -17,6 +17,7 @@ from commands.SimpleBruteForce import*
 from commands.ParameterBruteForce import* 
 from commands.GhidraCommand import*
 from commands.DataDecoder import*
+from commands.calculateTime import*
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -40,7 +41,8 @@ class Terminal:
             "ghidra reverse": self.ghidra_command,
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
-            "data decoder": self.data_decoder_command
+            "data decoder": self.data_decoder_command,
+            "time" : self.timeEstimate
             # Additional commands can be added here
         }
         self.running = True
@@ -129,6 +131,10 @@ class Terminal:
         decoder.run()
         return "Back to main terminal."
 
+    def timeEstimate(self):
+        est = CalculateTime(self.newpage)
+        est.run()
+        return "Back to main terminal."
     ## Add additional commands here ##
 
 

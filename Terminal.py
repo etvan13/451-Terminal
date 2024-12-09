@@ -19,6 +19,8 @@ from commands.Ghidra import *
 from commands.DataDecoder import *
 from commands.Patch import *
 from commands.calculateTime import*
+from commands.Binwalk import*
+from commands.StringSearch import*
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -44,7 +46,9 @@ class Terminal:
             "parameter bruteforce": self.parameter_brute_force_command,
             "patch": self.patch,
             "data decoder": self.data_decoder_command,
-            "time" : self.timeEstimate
+            "time" : self.timeEstimate,
+            "binwalk": self.binwalk_command,
+            "strings": self.string_search_command
             # Additional commands can be added here
         }
         self.running = True
@@ -141,6 +145,17 @@ class Terminal:
         est = CalculateTime(self.newpage)
         est.run()
         return "Back to main terminal."
+
+    def string_search_command(self):
+        string_search = StringSearchCommand(self.newpage)
+        string_search.run()
+        return "Back to main terminal."
+
+    def binwalk_command(self):
+        binwalk = BinwalkCommand(self.newpage)
+        binwalk.run()
+        return "Back to main terminal."
+        
     ## Add additional commands here ##
 
 

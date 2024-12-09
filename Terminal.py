@@ -21,6 +21,7 @@ from commands.Patch import *
 from commands.calculateTime import*
 from commands.Binwalk import*
 from commands.StringSearch import*
+from commands.Xor import*
 
 # This is the main terminal, it holds all the functionality of the system containing all the commands.
 class Terminal:
@@ -46,6 +47,8 @@ class Terminal:
             "bruteforce timing": (self.timeEstimate, "Estimates time required for a brute force attack."),
             "binwalk": (self.binwalk_command, "Analyzes binaries for hidden data."),
             "string search": (self.string_search_command, "Searches for human-readable strings in executables."),
+            "xor": (self.xor_command, "XORs any inuptted data or data from a file."),
+
         }
         self.running = True
 
@@ -165,6 +168,11 @@ class Terminal:
     def binwalk_command(self):
         binwalk = BinwalkCommand(self.newpage)
         binwalk.run()
+        return "Back to main terminal."
+
+    def xor_command(self):
+        xor = XORCommand(self.newpage)
+        xor.run()
         return "Back to main terminal."
         
     ## Add additional commands here ##

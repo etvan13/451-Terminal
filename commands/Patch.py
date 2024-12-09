@@ -21,7 +21,7 @@ class Patch:
         for i, exe in enumerate(executables, start=1):
             print(f"{i}: {exe}")
 
-        choice = input("\nEnter the number of the executable to reverse, or its full path: ").strip()
+        choice = input("\nEnter a number: ").strip()
         if choice.isdigit() and 1 <= int(choice) <= len(executables):
             return os.path.join("executables", executables[int(choice) - 1])
         else:

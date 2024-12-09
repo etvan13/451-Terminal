@@ -15,7 +15,7 @@ import stat
 # Importing command from Commands directory
 from commands.SimpleBruteForce import *
 from commands.ParameterBruteForce import * 
-from commands.GhidraCommand import *
+from commands.Ghidra import *
 from commands.DataDecoder import *
 from commands.Patch import *
 from commands.calculateTime import*

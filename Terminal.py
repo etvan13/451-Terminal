@@ -42,7 +42,8 @@ class Terminal:
             "simple bruteforce": self.simple_brute_force_command,
             "parameter bruteforce": self.parameter_brute_force_command,
             "patch": self.patch,
-            "data decoder": self.data_decoder_command
+            "data decoder": self.data_decoder_command,
+            "time" : self.timeEstimate
             # Additional commands can be added here
         }
         self.running = True
@@ -135,6 +136,10 @@ class Terminal:
         decoder.run()
         return "Back to main terminal."
 
+    def timeEstimate(self):
+        est = CalculateTime(self.newpage)
+        est.run()
+        return "Back to main terminal."
     ## Add additional commands here ##
 
 

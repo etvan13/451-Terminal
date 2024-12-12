@@ -141,17 +141,17 @@ class Terminal:
         return "Back to main terminal."
     
     def patch(self):
-        p = Patch() # passing new page function to use in command class
+        p = Patch() 
         print(p.run())
         return "Patcher done"
     
     def ghidra_command(self):
-        ghidra = GhidraCommand(self.newpage)
+        ghidra = GhidraCommand(self.newpage) # passing new page function to use in command class
         ghidra.run()
         return "Back to main terminal."
     
     def data_decoder_command(self):
-        decoder = DataDecoder(self.newpage)
+        decoder = DataDecoder(self.newpage) # passing new page function to use in command class
         decoder.run()
         return "Back to main terminal."
 
@@ -161,7 +161,7 @@ class Terminal:
         return "Back to main terminal."
 
     def string_search_command(self):
-        string_search = StringSearchCommand(self.newpage)
+        string_search = StringSearchCommand(self.newpage) 
         string_search.run()
         return "Back to main terminal."
 
@@ -174,9 +174,16 @@ class Terminal:
         xor = XORCommand(self.newpage)
         xor.run()
         return "Back to main terminal."
-        
+    
     ## Add additional commands here ##
 
+    ### Example function for command ###
+    def skele_command(self):
+        skele = SkeleClass()
+        skele.run()
+        return "Back to main terminal."
+
+#### END OF TERMINAL CLASS ####
 
 
 ### Example command class ###
@@ -186,6 +193,7 @@ class SkeleClass:
 
     def run(self):
         print("Running the Skeleton command.")
+        input("Press 'enter' to exit back to the main terminal.")
 
 
 # Main function to start the terminal

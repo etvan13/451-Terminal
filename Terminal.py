@@ -62,7 +62,7 @@ class Terminal:
     def default_message(self):
         """Returns the default terminal message."""
         self.newpage()
-        return "Brute Force Terminal\nType 'help' for a list of commands, 'help + <command>' for more, or 'exit' to quit.\n"
+        return "451 Terminal\nType 'help' for a list of commands, 'help + <command>' for more, or 'exit' to quit.\n"
 
     def process_command(self, command_input):
         """Processes a user-entered command."""
